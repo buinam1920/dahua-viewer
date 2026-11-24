@@ -1,16 +1,19 @@
-Dahua Viewer v2.1 (Standalone Portable - Windows 10/11)
+Dahua Viewer v2.1 (Portable - Windows 10/11 x64)
 =======================================================
 
-Ung dung doc lap dung WebView2 co san tren Windows:
+Ung dung portable da kem go2rtc va dung WebView2 Runtime cua Windows:
 - KHONG can Chrome, KHONG can Node.js, KHONG can Python, KHONG can PowerShell.
 - Tu bat go2rtc & proxy khi mo app, tu tat sach (Windows Job Object) khi dong app.
 - Ho tro DPI cao (125%/150%), 1 cua so duy nhat, tu tam dung Live khi thu nho.
 - Ghi nho bo cuc luoi, vi tri cua so; du lieu profile luu tai %LOCALAPPDATA%\DahuaViewer.
 
-Cai dat tren may khac:
-1. Giai nen thu muc nay vao mot noi co dinh (vi du: C:\DahuaViewer).
-2. Chay `Install-Shortcuts.bat` de tao shortcut "Dahua Viewer" tren Desktop & Start Menu.
-3. Mo `DahuaViewer.exe` (hoac shortcut Desktop), nhap mat khau dau ghi 1 lan -> bam Ket noi.
+Cach su dung:
+1. Giai nen toan bo file ZIP vao mot thu muc (vi du: C:\DahuaViewer).
+2. Mo `DahuaViewer.exe`, nhap IP dau ghi, tai khoan va mat khau, roi bam Ket noi.
+3. Neu may bao thieu WebView2 Runtime, chay `redist\MicrosoftEdgeWebview2Setup.exe`
+   khi co Internet, sau do mo lai ung dung.
+
+Chay `Install-Shortcuts.bat` neu muon tao loi tat tren Desktop va Start Menu.
 
 Tinh nang moi o v2.1:
 - Xem lai muot: tua tuc thi +-10s trong buffer, zoom timeline 24h/6h/1h/10m, keo/lan chuot,
