@@ -1,0 +1,219 @@
+<!doctype html>
+<html lang="vi">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Dahua Viewer</title>
+  <link rel="icon" type="image/png" href="icon.png" />
+  <link rel="manifest" href="manifest.json" />
+  <link rel="stylesheet" href="style.css?v=2.1" />
+</head>
+<body>
+  <div class="app">
+    <header class="topbar">
+      <button id="btn-sidebar" class="icon-btn" title="Ẩn/hiện danh sách camera (B)">☰</button>
+      <div class="brand"><span class="brand-dot"></span><span>Dahua Viewer</span></div>
+      <nav class="tabs">
+        <button class="tab-btn active" data-tab="live">Xem trực tiếp</button>
+        <button class="tab-btn" data-tab="playback">Xem lại</button>
+      </nav>
+      <div class="spacer"></div>
+      <span id="dev-pill" class="dev-pill">Chưa kết nối</span>
+      <button id="btn-hotkeys" class="icon-btn" title="Phím tắt (?)">?</button>
+      <button id="btn-settings" class="icon-btn" title="Cài đặt đầu ghi">⚙</button>
+    </header>
+
+    <div class="body">
+      <aside id="sidebar" class="sidebar">
+        <div class="sb-head">
+          <input id="cam-search" class="sb-search" type="search" placeholder="Tìm camera..." />
+        </div>
+        <div class="sb-group">
+          <span id="sb-dev-name">thuy dung</span>
+          <span id="sb-cam-count">0</span>
+        </div>
+        <div id="cam-list" class="cam-list"></div>
+      </aside>
+
+      <!-- LIVE VIEW -->
+      <main id="view-live" class="workspace">
+        <div id="codec-banner" class="codec-banner hidden">
+          <span id="codec-banner-text">Đầu ghi đang phát H.265/MJPEG mà Windows chưa có codec HEVC.</span>
+          <button id="btn-fix-h264-sub" class="pb-btn">Đổi luồng SD sang H.264</button>
+          <button id="btn-fix-h264-all" class="pb-btn primary">Đổi cả HD &amp; SD sang H.264</button>
+        </div>
+        <div id="paused-banner" class="info-banner hidden">
+          <span>Đã tạm dừng luồng Live khi thu nhỏ cửa sổ để tiết kiệm CPU &amp; băng thông Tailscale.</span>
+          <button id="btn-resume-live" class="pb-btn primary">Tiếp tục xem</button>
+        </div>
+        <div id="live-grid" class="live-grid g-4"></div>
+        <div class="bottombar">
+          <button id="btn-fit" class="icon-btn" title="Chuyển tỉ lệ khung hình (Fill / Fit)">Fit</button>
+          <button id="btn-global-hd" class="icon-btn" title="Đổi luồng lưới SD / HD">SD</button>
+          <div class="pager">
+            <button id="btn-prev-page" class="icon-btn" title="Trang trước (←)">‹</button>
+            <span id="pager-label" class="pager-label">1 / 1</span>
+            <button id="btn-next-page" class="icon-btn" title="Trang sau (→)">›</button>
+          </div>
+          <div class="layout-btns">
+            <button class="lay-btn" data-layout="1" title="1 khung (phím 1)">1</button>
+            <button class="lay-btn active" data-layout="4" title="4 khung (phím 4)">4</button>
+            <button class="lay-btn" data-layout="9" title="9 khung (phím 9)">9</button>
+            <button class="lay-btn" data-layout="16" title="16 khung (phím 0)">16</button>
+          </div>
+          <button id="btn-fullscreen" class="icon-btn" title="Toàn màn hình (F)">⤢ Toàn màn hình</button>
+        </div>
+      </main>
+
+      <!-- PLAYBACK VIEW -->
+      <main id="view-playback" class="workspace hidden">
+        <div class="pb-wrap">
+          <div class="pb-body">
+            <div class="pb-stage">
+              <video id="pb-video" playsinline muted autoplay></video>
+              <div id="pb-status" class="tile-status">Chọn camera và ngày rồi bấm lên thanh thời gian để xem lại</div>
+              <div id="pb-clock" class="pb-clock">--:--:--</div>
+            </div>
+            <aside id="pb-drawer" class="pb-drawer hidden">
+              <div class="drawer-head">
+                <span>Đoạn ghi (<span id="pb-seg-count">0</span>)</span>
+                <button id="pb-drawer-close" class="icon-btn" title="Đóng">✕</button>
+              </div>
+              <div id="pb-seg-list" class="seg-list"></div>
+            </aside>
+          </div>
+
+          <div class="pb-controls">
+            <div class="pb-row">
+              <select id="pb-camera" title="Chọn camera"></select>
+              <div class="date-nav">
+                <button id="pb-prev-day" class="pb-btn" title="Ngày trước">‹</button>
+                <input id="pb-date" type="date" />
+                <button id="pb-next-day" class="pb-btn" title="Ngày sau">›</button>
+                <button id="pb-today" class="pb-btn" title="Về hôm nay">Hôm nay</button>
+              </div>
+              <button id="pb-load" class="pb-btn primary">Tải lịch sử</button>
+              <button id="pb-oldest" class="pb-btn ghost hidden" title="Nhảy tới ngày có bản ghi cũ nhất"></button>
+              <span id="pb-info" class="pb-info"></span>
+              <div class="spacer"></div>
+              <div class="zoom-group" title="Phóng to thanh thời gian (hoặc cuộn chuột)">
+                <button class="zoom-btn active" data-zoom="24">24h</button>
+                <button class="zoom-btn" data-zoom="6">6h</button>
+                <button class="zoom-btn" data-zoom="1">1h</button>
+                <button class="zoom-btn" data-zoom="0.1667">10m</button>
+              </div>
+              <button id="pb-clips-btn" class="pb-btn" title="Mở danh sách đoạn ghi">Danh sách</button>
+            </div>
+
+            <div class="pb-row">
+              <button id="pb-back60" class="pb-btn" title="-1 phút">−1m</button>
+              <button id="pb-back10" class="pb-btn" title="-10 giây (←)">−10s</button>
+              <button id="pb-toggle" class="pb-btn primary" title="Phát / Tạm dừng (Space)">⏯</button>
+              <button id="pb-fwd10" class="pb-btn" title="+10 giây (→)">+10s</button>
+              <button id="pb-fwd60" class="pb-btn" title="+1 phút">+1m</button>
+
+              <span class="pb-sep"></span>
+              <button id="pb-prev-seg" class="pb-btn" title="Đoạn ghi trước">⏮ Đoạn</button>
+              <button id="pb-next-seg" class="pb-btn" title="Đoạn ghi sau">Đoạn ⏭</button>
+              <button id="pb-prev-motion" class="pb-btn warn" title="Sự kiện chuyển động trước">◀ Motion</button>
+              <button id="pb-next-motion" class="pb-btn warn" title="Sự kiện chuyển động sau">Motion ▶</button>
+
+              <span class="pb-sep"></span>
+              <div class="jump-group">
+                <input id="pb-jump-time" type="time" step="1" value="08:00:00" title="Nhập giờ chính xác" />
+                <button id="pb-jump-btn" class="pb-btn">Đi</button>
+              </div>
+
+              <div class="spacer"></div>
+              <button id="pb-mute" class="pb-btn" title="Bật / tắt âm thanh">🔇</button>
+              <button id="pb-snap" class="pb-btn" title="Chụp ảnh màn hình">📷</button>
+              <div class="export-group">
+                <select id="pb-export-mins" title="Độ dài đoạn clip cần tải">
+                  <option value="1">1 phút</option>
+                  <option value="5" selected>5 phút</option>
+                  <option value="10">10 phút</option>
+                  <option value="20">20 phút</option>
+                </select>
+                <button id="pb-download" class="pb-btn primary" title="Tải đoạn clip .dav từ mốc đang xem">⬇ Tải clip</button>
+              </div>
+            </div>
+
+            <div id="timeline-wrap" class="timeline-wrap" title="Click để tua, kéo hoặc lăn chuột để di chuyển khi đang phóng to">
+              <canvas id="timeline-canvas" class="timeline-canvas"></canvas>
+              <div id="timeline-tip" class="timeline-tip hidden">00:00:00</div>
+            </div>
+          </div>
+        </div>
+      </main>
+    </div>
+  </div>
+
+  <!-- Settings / Login Modal -->
+  <div id="modal-settings" class="modal-bg hidden">
+    <form id="settings-form" class="modal-card">
+      <h2>Kết nối đầu ghi Dahua</h2>
+      <p class="modal-sub">Lưu cục bộ trên máy này. Kiểm tra mật khẩu trước khi mở luồng để tránh khóa đầu ghi.</p>
+      <div class="field">
+        <label>Tên hiển thị</label>
+        <input id="cfg-name" type="text" placeholder="thuy dung" value="thuy dung" />
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Địa chỉ IP đầu ghi</label>
+          <input id="cfg-host" type="text" required placeholder="192.168.1.200" value="192.168.1.200" />
+        </div>
+        <div class="field">
+          <label>Số kênh</label>
+          <input id="cfg-channels" type="number" min="1" max="32" value="11" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Cổng HTTP</label>
+          <input id="cfg-http" type="number" value="80" />
+        </div>
+        <div class="field">
+          <label>Cổng RTSP</label>
+          <input id="cfg-rtsp" type="number" value="554" />
+        </div>
+      </div>
+      <div class="field-row">
+        <div class="field">
+          <label>Tài khoản</label>
+          <input id="cfg-user" type="text" required value="admin" />
+        </div>
+        <div class="field">
+          <label>Mật khẩu</label>
+          <input id="cfg-pass" type="password" required placeholder="Nhập mật khẩu đầu ghi" />
+        </div>
+      </div>
+      <div id="cfg-err" class="err-text"></div>
+      <div class="modal-actions">
+        <button id="cfg-cancel" type="button" class="pb-btn">Đóng</button>
+        <button id="cfg-save" type="submit" class="pb-btn primary">Kết nối</button>
+      </div>
+    </form>
+  </div>
+
+  <!-- Hotkeys Modal -->
+  <div id="modal-hotkeys" class="modal-bg hidden">
+    <div class="modal-card">
+      <h2>Phím tắt</h2>
+      <table class="hk-table">
+        <tr><td><kbd>1</kbd> <kbd>4</kbd> <kbd>9</kbd> <kbd>0</kbd></td><td>Đổi lưới 1 / 4 / 9 / 16 khung</td></tr>
+        <tr><td><kbd>←</kbd> <kbd>→</kbd></td><td>Chuyển trang (Live) hoặc tua ±10s tức thì (Xem lại)</td></tr>
+        <tr><td><kbd>Double-click</kbd></td><td>Phóng to HD 1 khung / quay lại lưới</td></tr>
+        <tr><td><kbd>Space</kbd></td><td>Phát / Tạm dừng (Xem lại)</td></tr>
+        <tr><td><kbd>B</kbd></td><td>Ẩn / hiện danh sách camera bên trái</td></tr>
+        <tr><td><kbd>F</kbd></td><td>Bật / tắt toàn màn hình</td></tr>
+        <tr><td><kbd>Esc</kbd></td><td>Thoát phóng to / đóng hộp thoại</td></tr>
+      </table>
+      <div class="modal-actions">
+        <button id="hk-close" class="pb-btn primary">Đóng</button>
+      </div>
+    </div>
+  </div>
+
+  <script type="module" src="app.js?v=2.1"></script>
+</body>
+</html>

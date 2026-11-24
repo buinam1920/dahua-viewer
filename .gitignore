@@ -1,0 +1,8 @@
+# Packaged releases & logs
+*.zip
+*.log
+profile/
+
+# Large / compiled binaries (rebuild DahuaViewer.exe via src/Build.bat; download go2rtc_win64.zip into bin/go2rtc.exe)
+bin/go2rtc.exe
+DahuaViewer.exe
