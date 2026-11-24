@@ -9,15 +9,17 @@ if not exist "%CSC%" (
 )
 "%CSC%" /nologo /platform:x64 /target:winexe /optimize+ ^
   /win32icon:"%SRC%dahua-viewer.ico" ^
-  /out:"%ROOT%\DahuaViewer.exe" ^
+  /out:"%ROOT%\RecorderViewer.exe" ^
   /r:"%ROOT%\Microsoft.Web.WebView2.Core.dll" ^
   /r:"%ROOT%\Microsoft.Web.WebView2.WinForms.dll" ^
   /r:System.Windows.Forms.dll ^
   /r:System.Drawing.dll ^
+  /r:System.IO.Compression.dll ^
+  /r:System.Net.Http.dll ^
   /r:System.Web.Extensions.dll ^
   "%SRC%DahuaViewerApp.cs"
 if errorlevel 1 (
   echo Build that bai!
   exit /b 1
 )
-echo Build thanh cong: %ROOT%\DahuaViewer.exe
+echo Build thanh cong: %ROOT%\RecorderViewer.exe

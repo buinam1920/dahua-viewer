@@ -1,4 +1,4 @@
-import { Go2RtcPlayer } from './player.js?v=2.1';
+import { Go2RtcPlayer } from './player.js?v=2.2';
 
 const PROXY_BASE = 'http://127.0.0.1:1985';
 const STORAGE_KEY = 'dahua_viewer_cfg_v1';
@@ -1199,8 +1199,8 @@ $('btn-fix-h264-all').onclick = () => convertStreamsToH264(true);
 // ---- Settings & Hotkeys Modals ----
 function openSettings(errMsg = '') {
   if (cfg) {
-    $('cfg-name').value = cfg.name || 'thuy dung';
-    $('cfg-host').value = cfg.host || '192.168.1.200';
+    $('cfg-name').value = cfg.name || '';
+    $('cfg-host').value = cfg.host || '';
     $('cfg-channels').value = cfg.channels || 11;
     $('cfg-http').value = cfg.httpPort || 80;
     $('cfg-rtsp').value = cfg.rtspPort || 554;
@@ -1235,7 +1235,7 @@ $('settings-form').addEventListener('submit', async (e) => {
   } catch (err) {
     const m = err?.message || '';
     $('cfg-err').textContent = /Failed to fetch/i.test(m)
-      ? 'go2rtc hoặc proxy chưa chạy — hãy đóng cửa sổ và mở lại DahuaViewer.exe.'
+      ? 'go2rtc hoặc proxy chưa chạy. Hãy đóng cửa sổ và mở lại RecorderViewer.exe.'
       : (m || 'Không kết nối được');
   } finally {
     btn.disabled = false; btn.textContent = 'Kết nối';

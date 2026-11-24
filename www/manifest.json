@@ -1,6 +1,6 @@
 {
-  "name": "Dahua Viewer",
-  "short_name": "Dahua Viewer",
+  "name": "Recorder Viewer",
+  "short_name": "Recorder Viewer",
   "start_url": "/",
   "display": "standalone",
   "background_color": "#0c0f14",

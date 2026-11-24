@@ -3,16 +3,16 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1" />
-  <title>Dahua Viewer</title>
+  <title>Recorder Viewer</title>
   <link rel="icon" type="image/png" href="icon.png" />
   <link rel="manifest" href="manifest.json" />
-  <link rel="stylesheet" href="style.css?v=2.1" />
+  <link rel="stylesheet" href="style.css?v=2.2" />
 </head>
 <body>
   <div class="app">
     <header class="topbar">
       <button id="btn-sidebar" class="icon-btn" title="Ẩn/hiện danh sách camera (B)">☰</button>
-      <div class="brand"><span class="brand-dot"></span><span>Dahua Viewer</span></div>
+      <div class="brand"><span class="brand-dot"></span><span>Recorder Viewer</span></div>
       <nav class="tabs">
         <button class="tab-btn active" data-tab="live">Xem trực tiếp</button>
         <button class="tab-btn" data-tab="playback">Xem lại</button>
@@ -29,7 +29,7 @@
           <input id="cam-search" class="sb-search" type="search" placeholder="Tìm camera..." />
         </div>
         <div class="sb-group">
-          <span id="sb-dev-name">thuy dung</span>
+          <span id="sb-dev-name">Đầu ghi</span>
           <span id="sb-cam-count">0</span>
         </div>
         <div id="cam-list" class="cam-list"></div>
@@ -155,12 +155,12 @@
       <p class="modal-sub">Lưu cục bộ trên máy này. Kiểm tra mật khẩu trước khi mở luồng để tránh khóa đầu ghi.</p>
       <div class="field">
         <label>Tên hiển thị</label>
-        <input id="cfg-name" type="text" placeholder="thuy dung" value="thuy dung" />
+        <input id="cfg-name" type="text" placeholder="Ví dụ: Đầu ghi tại nhà" />
       </div>
       <div class="field-row">
         <div class="field">
           <label>Địa chỉ IP đầu ghi</label>
-          <input id="cfg-host" type="text" required placeholder="192.168.1.200" value="192.168.1.200" />
+          <input id="cfg-host" type="text" required placeholder="Ví dụ: 192.168.1.100" />
         </div>
         <div class="field">
           <label>Số kênh</label>
@@ -214,6 +214,6 @@
     </div>
   </div>
 
-  <script type="module" src="app.js?v=2.1"></script>
+  <script type="module" src="app.js?v=2.2"></script>
 </body>
 </html>
